@@ -2,6 +2,6 @@
 GenerateQrcode_old.py
 GenerateQrcode_v1.py
 print_photo.py
-photo_buffer/
-video_buffer/
-video_ori/
+photo_buffer
+video_buffer
+video_ori

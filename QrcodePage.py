@@ -11,7 +11,7 @@ class QrcodePage(QWidget):
         # qr_path_ = os.path.join(os.getcwd(),'qrcode')
         # self.qr_path = os.path.join(os.getcwd(),'qrcode.png')
         self.qr_path =path
-        print(self.photo_name)
+        # print(self.photo_name)
         self.initUI()
 
     def initUI(self):
@@ -33,7 +33,7 @@ class QrcodePage(QWidget):
 
         #设置label
         self.label1 = QLabel()
-        self.label1.setFixedSize(QSize(500,500))
+        self.label1.setFixedSize(QSize(450,450))
         self.QrImage= QPixmap(self.qr_path)
         self.label1.setPixmap(self.QrImage)
 

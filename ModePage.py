@@ -3,6 +3,7 @@ import sys
 import cv2
 import shutil
 from PyQt5 import QtGui,QtCore,QtWidgets
+from PyQt5.Qt import *
 from PyQt5.QtCore import *
 from PyQt5.QtWidgets import *
 from PyQt5.QtGui import (QIcon,QFont)
@@ -51,40 +52,54 @@ class ModePage(QWidget):
         #设置窗口参数
         self.resize(1500,1000)
         self.center()
-        self.setWindowTitle('风格迁移')
+        self.setWindowTitle('风格迁移展示平台')
         logo = os.path.join('src', 'abs.png')
         logo_s1=os.path.join('src', 'city.jpg')
         logo_s2=os.path.join('src', 'qingming.jpg')
         logo_s3=os.path.join('src', 'fuzi.jpg')
+        logo_s4=os.path.join('src', 'wave.jpg')
+        logo_s5=os.path.join('src', 'star.jpg')
+        logo_s6=os.path.join('src', 'mac_flower.jpg')
 
         logo_b1=os.path.join('src', 'abs.png')
         logo_b2=os.path.join('src', 'b2.jpg')
         logo_b3=os.path.join('src', 'mosaic.jpg')
+        logo_abs=os.path.join('src', 'abs_all.png')
         self.setWindowIcon(QIcon(logo))
 
         self.label_camera = QLabel()  # 定义显示视频的Label
         self.label_camera.setFixedSize(1280, 720)  # 给显示视频的Label设置大小为641x481
+
+
+        self.label_abs = QLabel()
+        self.logo_abs_image = QPixmap(logo_abs)
+        self.logo_abs_image = self.logo_abs_image.scaled(900,90,QtCore.Qt.KeepAspectRatio)
+        self.label_abs.setPixmap(self.logo_abs_image)
 
         self.label_counter = QLabel()  # 定义显示倒数器的Label
         self.label_counter.setVisible(False)
         self.label_counter.setFixedSize(1280,720)
         self.label_counter.setText("3")
         self.label_counter.setAlignment(QtCore.Qt.AlignCenter)
-        self.label_counter.setStyleSheet("font-size: 102px;")
+        # self.label_counter.setStyleSheet("font-size: 102px;")
 
         self.style_cb = QComboBox() #定义下拉框
-        self.style_cb.setFixedSize(250,35)
+        self.style_cb.setFixedSize(250,40)
         self.style_cb.setIconSize(QSize(100,100))
-        self.style_cb.addItem(QIcon(logo),'no风格')
+        self.style_cb.addItem(QIcon(logo),'可选择风格')
         self.style_cb.addItem(QIcon(logo_s1),'风格1')
         self.style_cb.addItem(QIcon(logo_s2),'风格2')
         self.style_cb.addItem(QIcon(logo_s3),'风格3')
+        self.style_cb.addItem(QIcon(logo_s4),'风格4')
+        self.style_cb.addItem(QIcon(logo_s5),'风格5')
+        self.style_cb.addItem(QIcon(logo_s6),'风格6')
+
 
         self.background_cb = QComboBox()  # 定义下拉框
         self.background_cb.setVisible(False)
         self.background_cb.setFixedSize(250, 35)
         self.background_cb.setIconSize(QSize(100,100))
-        self.background_cb.addItem(QIcon(logo), 'no背景')
+        self.background_cb.addItem(QIcon(logo), '可选择背景')
         self.background_cb.addItem(QIcon(logo_b1), '背景1')
         self.background_cb.addItem(QIcon(logo_b2), '背景2')
         self.background_cb.addItem(QIcon(logo_b3), '背景3')
@@ -92,26 +107,28 @@ class ModePage(QWidget):
         self.btn_cutout = QPushButton('开始抠图')
         self.btn_cutout.setFixedSize(250, 35)
 
-        self.btn_record = QPushButton('开始录制')
+        self.btn_record = QPushButton('录制')
         self.btn_record.setFixedSize(250, 35)
 
         self.btn_photo = QPushButton('拍照')
         self.btn_photo.setFixedSize(250, 35)
 
         self._layout_1 = QVBoxLayout()  # 布局1
-        self._layout_1.addStretch(3)
+        self._layout_1.addStretch(1)
+        self._layout_1.addWidget(self.style_cb, 0, QtCore.Qt.AlignCenter)
+        self._layout_1.addStretch(2)
         self._layout_1.addWidget(self.btn_record)
         self._layout_1.addStretch(1)
         self._layout_1.addWidget(self.btn_photo)
-        self._layout_1.addStretch(1)
-        self._layout_1.addWidget(self.btn_cutout)
-        self._layout_1.addStretch(1)
-        self._layout_1.addWidget(self.background_cb)
+        # self._layout_1.addStretch(1)
+        # self._layout_1.addWidget(self.btn_cutout)
+        # self._layout_1.addStretch(1)
+        # self._layout_1.addWidget(self.background_cb)
         self._layout_1.addStretch(3)
 
         self._layout_2 = QVBoxLayout() #布局2
-        self._layout_2.addStretch(1)
-        self._layout_2.addWidget(self.style_cb,0,QtCore.Qt.AlignCenter)
+        # self._layout_2.addStretch(1)
+        # self._layout_2.addWidget(self.style_cb,0,QtCore.Qt.AlignCenter)
         self._layout_2.addStretch(1)
         self._layout_2.addWidget(self.label_camera)
         self._layout_2.addWidget(self.label_counter)
@@ -123,7 +140,11 @@ class ModePage(QWidget):
         self._layout_main.addLayout(self._layout_2)
         self._layout_main.addStretch(1)
 
-        self.setLayout(self._layout_main)  # 到这步才会显示所有控件
+        self._layout_main1 = QVBoxLayout()
+        self._layout_main1.addWidget(self.label_abs,0,QtCore.Qt.AlignLeft)
+        self._layout_main1.addLayout(self._layout_main)
+
+        self.setLayout(self._layout_main1)  # 到这步才会显示所有控件
 
     # 窗口相对屏幕居中
     def center(self):
@@ -140,7 +161,7 @@ class ModePage(QWidget):
         self.style_type=None
         self.transfer_init()
         self.open_camera()
-        # self.bgmModel_load()
+        self.bgmModel_load()
         BGModel.reload(self)
         matting_model.preload_init(self)
         self.timer_camera.timeout.connect(self.show_camera)  # 若定时器结束，则调用show_camera()
@@ -168,9 +189,11 @@ class ModePage(QWidget):
         self.photo_name2 = os.path.join(self.buffer_photo_buffer, _photo_preview)
 
         photo_image = cv2.cvtColor(self.image, cv2.COLOR_RGB2BGR)
+        photo_image=self.add_watermark(photo_image)
 
         photo_image2 = cv2.cvtColor(self.image, cv2.COLOR_RGB2BGR)
         photo_image2 = cv2.resize(photo_image2,(640,360))
+        photo_image2=self.add_watermark(photo_image2)
 
         if cv2.imwrite(self.photo_name,photo_image) and cv2.imwrite(self.photo_name2,photo_image2):
             self.switch_PhotoPage.emit()
@@ -183,6 +206,14 @@ class ModePage(QWidget):
     def btn_record_clicked(self):
         if int(self.label_counter.text()) == 3:
             self.btn_record.setText('结束录制')
+            _path = os.getcwd()
+            path=os.path.join(_path,'photo_buffer')
+            path=os.path.join(path,'pic.png')
+            self.image=cv2.cvtColor(self.image, cv2.COLOR_RGB2BGR)
+            cv2.imwrite(path,self.image)
+            self.label_counter.setStyleSheet("background-image:url(./photo_buffer/pic.png);font-size: 408px;color: White")
+            # _image_ = QPixmap(path)
+            # self.label_counter.setPixmap(_image_)
             self.label_camera.setVisible(False)
             self.label_counter.setVisible(True)
             if int(self.time_counter()) == 0:
@@ -190,7 +221,7 @@ class ModePage(QWidget):
                 self.label_camera.setVisible(True)
                 self.recording_init()
         else:
-            self.btn_record.setText('开始录制')
+            self.btn_record.setText('录制')
             self.label_counter.setVisible(False)
             self.label_camera.setVisible(True)
             self.recording_end()
@@ -261,7 +292,7 @@ class ModePage(QWidget):
             self.stat='style1'
             # self.path='city.pth'
             self.style_type='1'
-            self.route="./matting/transforms/city.pth"
+            self.route="./matting/transforms/mosaic.pth"
             self.style_change=True
 
         elif self.style_cb.currentText() == '风格2':
@@ -269,7 +300,7 @@ class ModePage(QWidget):
             self.stat='style2'
             # self.path='star2.pth'
             self.style_type='2'
-            self.route="./matting/transforms/qingming.pth"
+            self.route="./matting/transforms/udnie.pth"
             self.style_change=True
 
         elif self.style_cb.currentText() == '风格3':
@@ -277,10 +308,34 @@ class ModePage(QWidget):
             self.stat='style3'
             # self.path='fuzi.pth'
             self.style_type='3'
-            self.route="./matting/transforms/fuzi.pth"
+            self.route="./matting/transforms/flower.pth"
             self.style_change=True
 
-        elif self.style_cb.currentText() == 'no风格':
+        elif self.style_cb.currentText() == '风格4':
+            print('style4 clicked')
+            self.stat='style3'
+            # self.path='fuzi.pth'
+            self.style_type='3'
+            self.route="./matting/transforms/ao.pth"
+            self.style_change=True
+
+        elif self.style_cb.currentText() == '风格5':
+                print('style5 clicked')
+                self.stat='style3'
+                # self.path='fuzi.pth'
+                self.style_type='3'
+                self.route="./matting/transforms/star.pth"
+                self.style_change=True
+
+        elif self.style_cb.currentText() == '风格6':
+                print('style3 clicked')
+                self.stat='style3'
+                # self.path='fuzi.pth'
+                self.style_type='3'
+                self.route="./matting/transforms/maci_flower.pth"
+                self.style_change=True
+
+        elif self.style_cb.currentText() == '可选择风格':
             print('no style1 clicked')
             # self.stat_mat='10'
             self.style_type=None
@@ -492,8 +547,24 @@ class ModePage(QWidget):
         frame_name = "{:08d}.png".format(self.recording_index)
         frame_name = os.path.join(self.buffer_video_buffer, frame_name)
         image = cv2.cvtColor(image, cv2.COLOR_RGB2BGR)
+        image=self.add_watermark(image)
         cv2.imwrite(frame_name, image)
         self.recording_index += 1
+    
+    # def add_watermark(self, image, watermark):
+    def add_watermark(self, image):
+        # cv2.imwrite(watermark, image)
+        # image = cv2.imread(watermark)
+
+        interval_width = 125
+        interval_height = 20
+        height, width, _ = image.shape
+
+        font = cv2.FONT_HERSHEY_SIMPLEX
+        font_scale = 0.7
+
+        cv2.putText(image, 'UHD TV Research and Application Laboratory', (0, height -  interval_height), font, font_scale, (255, 255, 255), 1)
+        return image
 
 
 if __name__ == '__main__':

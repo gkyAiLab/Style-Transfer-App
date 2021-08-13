@@ -53,6 +53,10 @@ class MainWindow(QMainWindow):
     painter=QPainter(printer)
     #实例化视图窗口
     rect=painter.viewport()
+    #set paper w and h
+    rect.setWidth(640)
+    rect.setHeight(320)
+    
     #获取图片的尺寸
     size=self.image.size()
 

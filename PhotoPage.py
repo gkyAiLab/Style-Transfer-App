@@ -87,7 +87,8 @@ class PhotoPage(QWidget):
         painter.setViewport(rect.x(),rect.y(),size.width(),size.height())
 
         #设置窗口的大小为图片的尺寸，并在窗口内绘制图片
-        painter.setWindow(0,0,size.width(),size.height())
+        #painter.setWindow(0,0,size.width(),size.height())
+        painter.setWindow(self.photo.rect())
         painter.drawImage(0,0,self.photo)
         painter.end()
 
